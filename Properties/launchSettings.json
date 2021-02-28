@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Erebonia": {
+      "commandName": "Project",
+      "commandLineArgs": "-e \"C:\\Users\\principal\\Romhacking\\ColdSteel\\t0000.xlsx\" \"es\""
+    }
+  }
+}
