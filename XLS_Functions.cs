@@ -24,8 +24,10 @@ namespace Erebonia
             using (var excel = new ExcelPackage(new FileInfo(file)))
             {
                 ExcelWorksheet worksheet = excel.Workbook.Worksheets[0];
-                XLS xls = new XLS();
-                var c = 0;
+                XLS diagXls = new XLS();
+                XLS strXls = new XLS();
+                var diagQty = 0;
+                var strQty = 0;
                 for (int i = 1; i < worksheet.Dimension.Rows; i++)
                 {
                     for (int j = 1; j < worksheet.Dimension.Columns; j++)
@@ -33,25 +35,38 @@ namespace Erebonia
                         if (worksheet.Cells[i, j].Value != null)
                         {
                             string value = worksheet.Cells[i, j].Value.ToString();
-                            if (value == "dialog")
+                            switch (value)
                             {
-                                xls.Entries.Add(new XLS.Entry
-                                {
-                                    ID = (uint)c,
-                                    Row = (uint)i,
-                                    Column = (uint)j,
-                                    Text = worksheet.Cells[i + 1, j].Value.ToString(),
-                                });
-                                c++;
+                                case "dialog":
+                                    diagXls.Entries.Add(new XLS.Entry
+                                    {
+                                        ID = (uint)diagQty,
+                                        Row = (uint)i,
+                                        Column = (uint)j,
+                                        Text = worksheet.Cells[i + 1, j].Value.ToString(),
+                                    });
+                                    diagQty++;
+                                    break;
+                                case "string":
+                                    strXls.Entries.Add(new XLS.Entry
+                                    {
+                                        ID = (uint)strQty,
+                                        Row = (uint)i,
+                                        Column = (uint)j,
+                                        Text = worksheet.Cells[i + 1, j].Value.ToString(),
+                                    });
+                                    strQty++;
+                                    break;
                             }
                         }                        
                     }
                 }
-                GeneratePo(xls, lang);
+                GeneratePo(diagXls, lang, true);
+                GeneratePo(strXls, lang, false);
             }
         }
 
-        static private void GeneratePo(XLS xls, string lang)
+        static private void GeneratePo(XLS xls, string lang, bool mode)
         {
             var po = new Po
             {
@@ -64,18 +79,32 @@ namespace Erebonia
             foreach (var entry in xls.Entries)
             {
                 uint asciiColumn = entry.Column + 64;
-                po.Add(new PoEntry(entry.Text)
+                if (!string.IsNullOrEmpty(entry.Text))
                 {
-                    Context = entry.ID.ToString(),
-                    ExtractedComments = $"{(char)asciiColumn}{entry.Row + 1}",
-                });
+                    po.Add(new PoEntry(entry.Text)
+                    {
+                        Context = entry.ID.ToString(),
+                        ExtractedComments = $"{(char)asciiColumn}{entry.Row + 1}",
+                    });
+                }                
             }
 
             var node = NodeFactory.FromMemory("node");
-            node.TransformWith(new Po2BinaryEasy()
+            switch (mode)
             {
-                PoPassed = po
-            }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetDirectoryName(fileName) + "\\" + Path.GetFileNameWithoutExtension(fileName) + "_dialog.po");
+                case true:
+                    node.TransformWith(new Po2BinaryEasy()
+                    {
+                        PoPassed = po
+                    }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetDirectoryName(fileName) + "\\" + Path.GetFileNameWithoutExtension(fileName) + "_dialog.po");
+                    break;
+                case false:
+                    node.TransformWith(new Po2BinaryEasy()
+                    {
+                        PoPassed = po
+                    }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetDirectoryName(fileName) + "\\" + Path.GetFileNameWithoutExtension(fileName) + "_string.po");
+                    break;
+            }            
         }
 
         static public void Import(string poFile, string xlsFile)
