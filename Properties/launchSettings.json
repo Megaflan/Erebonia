@@ -2,7 +2,7 @@
   "profiles": {
     "Erebonia": {
       "commandName": "Project",
-      "commandLineArgs": "-e \"H:\\Downloads\\t5700.xlsx\" \"es\""
+      "commandLineArgs": "-e \"tk_alan.xlsx\" ES"
     }
   }
 }

@@ -23,7 +23,7 @@ namespace Erebonia
 
             using (var excel = new ExcelPackage(new FileInfo(file)))
             {
-                ExcelWorksheet worksheet = excel.Workbook.Worksheets[0];
+                ExcelWorksheet worksheet = excel.Workbook.Worksheets["Sheet1"];
                 XLS diagXls = new XLS();
                 XLS strXls = new XLS();
                 var diagQty = 0;
@@ -38,24 +38,30 @@ namespace Erebonia
                             switch (value)
                             {
                                 case "dialog":
-                                    diagXls.Entries.Add(new XLS.Entry
+                                    if (worksheet.Cells[i + 1, j].Value != null)
                                     {
-                                        ID = (uint)diagQty,
-                                        Row = (uint)i,
-                                        Column = (uint)j,
-                                        Text = worksheet.Cells[i + 1, j].Value.ToString(),
-                                    });
-                                    diagQty++;
+                                        diagXls.Entries.Add(new XLS.Entry
+                                        {
+                                            ID = (uint)diagQty,
+                                            Row = (uint)i,
+                                            Column = (uint)j,
+                                            Text = worksheet.Cells[i + 1, j].Value.ToString(),
+                                        });
+                                        diagQty++;
+                                    }                                    
                                     break;
                                 case "string":
-                                    strXls.Entries.Add(new XLS.Entry
+                                    if (worksheet.Cells[i + 1, j].Value != null)
                                     {
-                                        ID = (uint)strQty,
-                                        Row = (uint)i,
-                                        Column = (uint)j,
-                                        Text = worksheet.Cells[i + 1, j].Value.ToString(),
-                                    });
-                                    strQty++;
+                                        strXls.Entries.Add(new XLS.Entry
+                                        {
+                                            ID = (uint)strQty,
+                                            Row = (uint)i,
+                                            Column = (uint)j,
+                                            Text = worksheet.Cells[i + 1, j].Value.ToString(),
+                                        });
+                                        strQty++;
+                                    }
                                     break;
                             }
                         }                        
@@ -96,13 +102,13 @@ namespace Erebonia
                     node.TransformWith(new Po2BinaryEasy()
                     {
                         PoPassed = po
-                    }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetDirectoryName(fileName) + "\\" + Path.GetFileNameWithoutExtension(fileName) + "_dialog.po");
+                    }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetFileNameWithoutExtension(fileName) + "_dialog.po");
                     break;
                 case false:
                     node.TransformWith(new Po2BinaryEasy()
                     {
                         PoPassed = po
-                    }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetDirectoryName(fileName) + "\\" + Path.GetFileNameWithoutExtension(fileName) + "_string.po");
+                    }).TransformWith(new Po2Binary()).Stream.WriteTo(Path.GetFileNameWithoutExtension(fileName) + "_string.po");
                     break;
             }            
         }
