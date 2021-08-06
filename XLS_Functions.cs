@@ -84,13 +84,12 @@ namespace Erebonia
 
             foreach (var entry in xls.Entries)
             {
-                uint asciiColumn = entry.Column + 64;
                 if (!string.IsNullOrEmpty(entry.Text))
                 {
                     po.Add(new PoEntry(entry.Text)
                     {
                         Context = entry.ID.ToString(),
-                        ExtractedComments = $"{(char)asciiColumn}{entry.Row + 1}",
+                        ExtractedComments = $"{entry.Column}{";"}{entry.Row + 1}",
                     });
                 }                
             }
@@ -125,7 +124,8 @@ namespace Erebonia
                 foreach (var poEntry in po.Entries)
                 {
                     var text = poEntry.Text == "<!empty>" ? string.Empty : poEntry.Text;
-                    worksheet.Cells[poEntry.ExtractedComments].Value = text;
+                    var extractedComments = poEntry.ExtractedComments.Split(';');
+                    worksheet.Cells[int.Parse(extractedComments[1]), int.Parse(extractedComments[0])].Value = text;
                 }
                 excel.Save();
             }            
