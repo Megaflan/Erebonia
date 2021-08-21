@@ -28,9 +28,9 @@ namespace Erebonia
                 XLS strXls = new XLS();
                 var diagQty = 0;
                 var strQty = 0;
-                for (int i = 1; i < worksheet.Dimension.Rows; i++)
+                for (int i = 1; i < worksheet.Dimension.Rows + 1; i++)
                 {
-                    for (int j = 1; j < worksheet.Dimension.Columns; j++)
+                    for (int j = 1; j < worksheet.Dimension.Columns + 1; j++)
                     {
                         if (worksheet.Cells[i, j].Value != null)
                         {

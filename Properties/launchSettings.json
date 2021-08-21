@@ -2,7 +2,7 @@
   "profiles": {
     "Erebonia": {
       "commandName": "Project",
-      "commandLineArgs": "-i t5620_dialog.po t5620.xlsx"
+      "commandLineArgs": "-e \"C:\\Users\\principal\\Romhacking\\Muestras ColdSteel\\book03.xlsx\" \"es\""
     }
   }
 }
